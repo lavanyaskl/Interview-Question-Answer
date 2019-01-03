@@ -1,0 +1,42 @@
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+		System.out.println("Enter Number of steps");
+		Scanner scan=new Scanner(System.in);
+		int number_of_steps=scan.nextInt();
+		System.out.println("Enter String of steps");
+		String path=scan.next();
+		int mountain=0,valley=0,i=0,sea_level=0,valley_count=0;
+		char[] path_as_char=path.toCharArray();
+		if(number_of_steps==path.length()){
+		for(i=0;i<path.length();i++){
+		    if(path_as_char[i]=='U'){
+		        if(sea_level>=0){
+		            mountain++;
+		            sea_level++;
+		        }
+		        else {
+		            valley++;
+		            sea_level++;
+		            if(sea_level==0) valley_count++;
+		        }
+		    }
+		    else if(path_as_char[i]=='D'){
+		        if(sea_level<=0){
+		            valley--;
+		            sea_level--;
+		            if(sea_level==0) valley_count++;
+		        }
+		        else {
+		            mountain--;
+		            sea_level--;
+		        }
+		    }
+		}
+		System.out.println("Count of valley : "+valley_count);
+		}else{
+		    System.out.println("Enter steps equal to Number of steps");
+		}
+	}
+}
