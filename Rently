@@ -1,0 +1,143 @@
+
+import java.util.*;
+public class Main{ 
+    String time;
+    int cents;
+    
+    Main(){
+        cents=0;
+        time="00:00:00";
+    }
+
+public static void main(String args[]){
+String[] logs=new String[100];
+String phone;
+int number_of_calls,phone_1st_digit,i,hour,minutes,second,cents;
+int hr1,mn1,sc1,hr2,sc2,mn2,hr_tot=0,mn_tot=0,sc_tot=0,total_bill=0,long_duration=0,convert_to_sec=0;
+String compare_string="0",free_call="0";
+
+Map<String,Main> hm=new Hashtable<String,Main>();
+
+Main compare_obj,value=null;
+
+System.out.println("Enter no of call logs");
+Scanner scan=new Scanner(System.in);
+number_of_calls=scan.nextInt();
+System.out.println("Enter String");
+
+if(number_of_calls>=1 && number_of_calls<=100){
+ 
+ for(i=0;i<number_of_calls;i++){
+   logs[i]=scan.next();
+   char[] temp_ch=logs[i].toCharArray();
+   
+   if((temp_ch[2]==':')&&(temp_ch[5]==':')&&(temp_ch[8]==',')&&(temp_ch[12]=='-')&&(temp_ch[16]=='-')){
+   hour=Integer.parseInt(logs[i].substring(0,2));
+   minutes=Integer.parseInt(logs[i].substring(3,5));      
+   second=Integer.parseInt(logs[i].substring(6,8));
+   
+   if((hour>=0 && hour<=23 )&&(minutes>=0 && minutes<=59)&&(second>=0 && second<=59)){
+   phone_1st_digit=temp_ch[9];
+   
+   if(phone_1st_digit!=0){
+       Main obj_in_map=new Main();
+    obj_in_map.time=logs[i].substring(0,8);
+    phone=logs[i].substring(9,20);
+    
+    value=hm.putIfAbsent(phone,obj_in_map);
+
+    if(hour == 0 && minutes<5){
+    minutes=minutes*60+second;
+    obj_in_map.cents=minutes*3;
+    }
+    else if(minutes>=5 || hour>0){
+    hour=hour*60+minutes;
+    if(second>0){
+    hour++;
+    }
+    obj_in_map.cents=hour*150;
+    }
+    
+   if(value!=null){  
+       Main temp_obj=new Main();
+   temp_obj.cents=value.cents+obj_in_map.cents;
+   String[] convert_buff=value.time.split(":");
+   hr1=Integer.parseInt(convert_buff[0]);
+   mn1=Integer.parseInt(convert_buff[1]);
+   sc1=Integer.parseInt(convert_buff[2]);
+   convert_buff=obj_in_map.time.split(":");
+    hr2=Integer.parseInt(convert_buff[0]);
+   mn2=Integer.parseInt(convert_buff[1]);
+   sc2=Integer.parseInt(convert_buff[2]);
+
+   sc_tot=sc1+sc2;
+   mn_tot=mn1+mn2;
+   hr_tot=hr1+hr2;
+  
+   if(sc_tot>=60){
+   sc_tot=sc_tot%60;
+   mn_tot++;
+   }
+  if(mn_tot>=60){
+  mn_tot=mn_tot%60;
+  hr_tot++;
+  }
+ 
+temp_obj.time=hr_tot+":"+mn_tot+":"+sc_tot;
+hm.replace(phone,temp_obj);
+}
+}
+//for ends
+else{ 
+System.out.println("No leading zeros in mobile number");
+i--;
+}
+}
+else{
+System.out.println("hours/mins/secs should be in range 00 and 59");
+i--;
+}
+}
+else{
+i--;
+System.out.println("Time format should be hh:mm:ss and the number format should be nnn-nnn-nnn");
+}
+}
+//for ends
+
+for(Map.Entry<String, Main> entry:hm.entrySet()){
+    compare_obj=entry.getValue();
+   String[] convert_sec=compare_obj.time.split(":");
+    hour=Integer.parseInt(convert_sec[0]);
+    minutes=Integer.parseInt(convert_sec[1]);
+     second=Integer.parseInt(convert_sec[2]);
+    convert_to_sec=hour*3600+minutes*60+second;
+    if(convert_to_sec>long_duration){
+        long_duration=convert_to_sec;
+        free_call=entry.getKey();
+    }
+    else if(convert_to_sec==long_duration){
+        if((entry.getKey().compareTo(free_call))<0){
+        free_call=entry.getKey();
+    }
+    }
+}
+for(Map.Entry<String, Main> entry:hm.entrySet()){
+    compare_string=entry.getKey();
+    if((compare_string.compareTo(free_call))!=0){
+        compare_obj=hm.get(compare_string);
+        total_bill=total_bill+compare_obj.cents;
+    }
+}
+System.out.println("Total Bill "+total_bill);
+}
+else{
+
+System.out.println("N should be from 1 to 100");
+
+}
+
+}
+
+}
+
